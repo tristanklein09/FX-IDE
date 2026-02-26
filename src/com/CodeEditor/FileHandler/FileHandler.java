@@ -1,0 +1,288 @@
+package com.CodeEditor.FileHandler;
+
+import com.CodeEditor.*;
+import javafx.scene.control.*;
+import org.fxmisc.richtext.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+
+
+import java.io.*;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.ArrayList;
+
+//TODO: Have this run on a different thread
+public class FileHandler {
+
+    private static TreeView<File> fileTree = null;
+    private static Controller controller = null;
+    private final File openRecentFile = new File("src/com/CodeEditor/metadata/openRecent.txt");
+
+    public static File openedDirectory = null;
+
+    public static File newFileDirectory = null;
+
+    public static ArrayList<Pair<Tab, File>> tabs = new ArrayList<>();
+    public static ArrayList<File> unsavedFiles = new ArrayList<>();
+
+
+    public FileHandler(TreeView<File> fileTree, Controller controller) {
+        //CellFactory
+        fileTree.setCellFactory(_ -> {
+            TreeCell<File> cell = new TreeCell<>(){
+                //Allows for updating the text of the item
+                @Override
+                protected void updateItem(File item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            };
+            //Double click mouse event
+            cell.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) { //Double click
+                    TreeItem<File> item = cell.getTreeItem();
+                    try {
+                        openFile(cell.getTreeItem().getValue());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+
+            return cell;
+        });
+
+        this.fileTree = fileTree;
+        this.controller = controller;
+    }
+
+    public static void reloadTree() {
+        loadRootFolder(openedDirectory);
+    }
+
+    public static File openFileExplorer(String title) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle(title);
+
+        File selectedDirectory = directoryChooser.showDialog(new Stage());
+
+        if (selectedDirectory != null) {
+            System.out.println("Selected directory: " + selectedDirectory.getAbsolutePath());
+        }
+
+        return selectedDirectory;
+    }
+
+    public void openFolderWithExplorer(String title) throws IOException {
+        File directory = openFileExplorer(title);
+
+        if (directory == null) { //User cancelled
+            return;
+        }
+
+        loadRootFolder(directory);
+        addToRecentFile(directory);
+        addAllToOpenRecentMenu();
+    }
+
+    public void openFolder(File directory) throws IOException {
+        if (directory == null) {
+            return;
+        }
+
+        loadRootFolder(directory);
+        addToRecentFile(directory);
+        addAllToOpenRecentMenu();
+
+        openedDirectory = directory;
+    }
+
+    public void openFile(File file) throws IOException {
+        if (file.isDirectory()) return; //Cannot load in a directory so we exit
+
+        //Setting up the reader
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader bfro = new BufferedReader(new FileReader(file));
+        String st;
+
+        //Creating the tab
+        CodeArea codeArea = new CodeArea();
+        codeArea.setWrapText(true);
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        Tab tab = new Tab();
+        tab.setText(file.getName());
+        tab.setContent(codeArea);
+        controller.tabPane.getTabs().add(tab);
+
+        Pair<Tab, File> pair = new Pair<>(tab, file);
+        tabs.add(pair);
+
+        //Adding the string to the rich text area
+        while ((st = bfro.readLine()) != null) {
+            codeArea.appendText(st);
+            codeArea.appendText("\n");
+        }
+
+        unsavedFiles.add(file);
+    }
+
+    public void addToRecentFile(File file) throws IOException {
+        List<String> lines = Files.readAllLines(openRecentFile.toPath());
+
+        //Already in the file so do not add
+        if (lines.contains(String.valueOf(file))) return;
+
+        //Contains more than 5 lines so delete the first one
+        if (lines.size() >= 5) {
+            lines.remove(0);
+
+            //Rewrite the file so that the line is removed
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(openRecentFile))) {
+                for (String line : lines) {
+                    bw.write(line);
+                    bw.newLine();
+                }
+            }
+        }
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(openRecentFile, true))) {
+            bw.write(String.valueOf(file));
+            bw.newLine();
+            System.out.println("Success");
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + openRecentFile);
+        }
+    }
+
+    //Calls the recursive ui
+    public static void loadRootFolder(File directory) {
+        TreeItem<File> rootNode = buildTreeForDirectory(directory);
+        fileTree.setRoot(rootNode);
+        rootNode.setExpanded(true);
+    }
+
+    //Recursive function to generate a file structure
+    public static TreeItem<File> buildTreeForDirectory(File directory) {
+        TreeItem<File> directoryTreeItem = new TreeItem<>(directory);
+        File[] filesList =  directory.listFiles();
+
+        if (filesList == null) {
+            return directoryTreeItem;
+        }
+
+        for (File file : filesList) {
+            if (file.isDirectory()) {
+                TreeItem<File> childNode = buildTreeForDirectory(file);
+                directoryTreeItem.getChildren().add(childNode);
+            }
+            else {
+                directoryTreeItem.getChildren().add(new TreeItem<>(file));
+            }
+        }
+
+        return directoryTreeItem;
+    }
+
+    public void addToOpenRecentMenu(File file) {
+        MenuItem menuItem = new MenuItem(file.getName());
+        controller.openRecentMenu.getItems().add(menuItem);
+
+        //Add an event
+        menuItem.setOnAction(_ -> {
+            try {
+                openFolder(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void addAllToOpenRecentMenu() throws IOException {
+        controller.openRecentMenu.getItems().clear();
+
+        List<String> lines = Files.readAllLines(openRecentFile.toPath());
+
+        for (int i = lines.size() - 1; i >= 0; i--) {
+            String line = lines.get(i);
+            addToOpenRecentMenu(new File(line));
+        }
+    }
+
+    public static Pair<Tab, File> getFocussedTabPair() {
+        Tab current = controller.tabPane.getSelectionModel().getSelectedItem();
+        Pair<Tab, File> pair = null;
+
+        for (Pair<Tab, File> p: tabs) {
+            if (p.key().equals(current)) {
+                pair = p;
+                break;
+            }
+        }
+
+        return pair;
+    }
+
+    public static void onSaveFileMenu(Controller controller) throws IOException {
+        Status status = new Status(controller);
+        Pair<Tab, File> tabPair = getFocussedTabPair();
+        CodeArea codeArea = (CodeArea) tabPair.key().getContent();
+        saveFile(tabPair.value(), codeArea);
+        status.setStatusLabelText("Saved file: " + tabPair.value().getName(), 5000);
+
+        unsavedFiles.remove(tabPair.value());
+    }
+
+    public static void saveFile(File file, CodeArea codeArea) throws IOException {
+        String st = codeArea.getText();
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            bw.write(st);
+        }
+    }
+
+    public static void saveAllFiles(Controller controller) throws IOException {
+        Status status = new Status(controller);
+        List<File> saved = new ArrayList<>();
+
+        for (File file : unsavedFiles) {
+            for (Pair<Tab, File> pair : tabs) {
+                if (pair.value().equals(file)) {
+                    CodeArea codeArea = (CodeArea) pair.key().getContent();
+                    saveFile(file, codeArea);
+                    saved.add(pair.value());
+                }
+            }
+        }
+
+        unsavedFiles.removeAll(saved);
+        status.setStatusLabelText("Saved all files", 5000);
+    }
+
+    public static void newFileDialogBox() throws IOException {
+        NewFileBox fileBox = new NewFileBox();
+        fileBox.show();
+    }
+
+    public static void createFile(File directory, String fileName) throws IOException {
+        try {
+            File file = new File(directory, fileName);
+            if (file.createNewFile()) {
+                System.out.println("Success");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void newFile() throws IOException {
+
+        NewFileBoxController newFileBoxController = new NewFileBoxController();
+        String fileName = newFileBoxController.newFileName;
+    }
+}
