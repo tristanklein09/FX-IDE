@@ -1,25 +1,25 @@
-### **Code Editor**
+# **Code Editor**
 
 
 
 This is a simple code editor created in java using javafx. It is still a work in progress, so the features may be limited.
 
 
-##### Features:
+## Features:
 
-Open folders
+-Open folders
 
-Edit and save already existing files
+-Edit and save already existing files
 
-Save all edited files
+-Save all edited files
 
-Create new files
+-Create new files
 
-Browse the folder tree
+-Browse the folder tree
 
 
 
-##### Project Structure:
+## Project Structure:
 
 There are some important things to note about the structure of this project in order to get it working. 
 
@@ -27,7 +27,9 @@ This project relies on the BellSoft Liberica JDK (version 25.0.2), as it include
 
 This project also heavily relies on richtextfx (fat version 0.11.7), to display the text. Therefore, to run this project, you should also install that dependency.
 
+#####  
 
+<br>
 
 Feel free to suggest improvement that can be made to the codebase.
 
