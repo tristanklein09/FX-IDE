@@ -4,11 +4,12 @@ import com.CodeEditor.*;
 import com.CodeEditor.NewFile.NewFileBox;
 import com.CodeEditor.NewFile.NewFileBoxController;
 import com.CodeEditor.NewProject.NewProjectBox;
+
+import com.CodeEditor.ProjectMetadata.ProjectMeta;
 import javafx.scene.control.*;
 import org.fxmisc.richtext.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-
 
 import java.io.*;
 import java.nio.file.Files;
@@ -16,12 +17,17 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
 
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+
+
 //TODO: Have this run on a different thread
 public class FileHandler {
 
     private static TreeView<File> fileTree = null;
     private static Controller controller = null;
-    private final File openRecentFile = new File("src/com/CodeEditor/metadata/openRecent.txt");
+    private final File openRecentFile = new File("src/com/CodeEditor/IDEmetadata/openRecent.txt");
 
     public static File openedDirectory = null;
     public static File newFileDirectory = null;
@@ -324,8 +330,22 @@ public class FileHandler {
     }
 
     //Initializes the data folder when creating a new project
-    public static void initData () {
+    public static void initData (String projectName, File dataDir) throws IOException {
+        ObjectMapper mapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
+        mapper.isEnabled(SerializationFeature.INDENT_OUTPUT);
+        Path file = Path.of(dataDir.getAbsolutePath() + File.separator + "project.json"); //Path of the file
 
+        //Assigning the values
+        ProjectMeta meta = new ProjectMeta();
+        meta.name = projectName;
+        meta.type = "java";
+
+        ProjectMeta.ProjectSettings settings = new ProjectMeta.ProjectSettings();
+        settings.JDKPath = "";
+        settings.JDKVersion = "";
+        meta.settings = settings;
+
+        mapper.writeValue(file.toFile(), meta); //Writing to the json
     }
 
     //Creates the folder structure of the new project
@@ -369,7 +389,7 @@ public class FileHandler {
                     return;
                 }
 
-                initData();
+                initData(projectName, data);
 
                 Status status = new Status(controller);
                 status.setStatusLabelText("New project created", 5000);
