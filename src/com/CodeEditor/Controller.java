@@ -1,11 +1,9 @@
 package com.CodeEditor;
 
 import com.CodeEditor.FileHandler.FileHandler;
-import com.CodeEditor.NewFile.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import org.fxmisc.richtext.CodeArea;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,6 +89,6 @@ public class Controller implements Initializable {
 
     public void openFolder() throws IOException {
         FileHandler fileHandler = new FileHandler(fileTree, this);
-        fileHandler.openFolderWithExplorer("Select Folder");
+        fileHandler.openProjectWithExplorer("Select Folder");
     }
 }

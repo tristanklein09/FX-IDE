@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -82,16 +83,38 @@ public class FileHandler {
         return selectedDirectory;
     }
 
-    public void openFolderWithExplorer(String title) throws IOException {
+    public void openProjectWithExplorer(String title) throws IOException {
         File directory = openFileExplorer(title);
 
         if (directory == null) { //User cancelled
             return;
         }
 
+        //Check if it is a valid - has .data
+        boolean isValid = checkForData(directory);
+        if (!isValid) {
+            Status status = new Status(controller);
+            status.setStatusLabelText("Invalid project", 10000);
+            return;
+        }
+
         loadRootFolder(directory);
         addToRecentFile(directory);
         addAllToOpenRecentMenu();
+    }
+
+    //Verifies the existence of the .data folder in the project, indicating if it is compatible
+    public static boolean checkForData(File directory) {
+        Path dataDir = directory.toPath().resolve(".data");
+
+        //It exists
+        if (Files.exists(dataDir) && Files.isDirectory(dataDir)) {
+            System.out.println("Found .data");
+            return true;
+        } else {
+            System.out.println("Missing .data");
+            return false;
+        }
     }
 
     public void openFolder(File directory) throws IOException {
