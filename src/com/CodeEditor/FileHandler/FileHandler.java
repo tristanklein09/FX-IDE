@@ -1,6 +1,9 @@
 package com.CodeEditor.FileHandler;
 
 import com.CodeEditor.*;
+import com.CodeEditor.NewFile.NewFileBox;
+import com.CodeEditor.NewFile.NewFileBoxController;
+import com.CodeEditor.NewProject.NewProjectBox;
 import javafx.scene.control.*;
 import org.fxmisc.richtext.*;
 import javafx.stage.DirectoryChooser;
@@ -20,8 +23,8 @@ public class FileHandler {
     private final File openRecentFile = new File("src/com/CodeEditor/metadata/openRecent.txt");
 
     public static File openedDirectory = null;
-
     public static File newFileDirectory = null;
+    public static File newProjectDirectory = null;
 
     public static ArrayList<Pair<Tab, File>> tabs = new ArrayList<>();
     public static ArrayList<File> unsavedFiles = new ArrayList<>();
@@ -269,6 +272,11 @@ public class FileHandler {
         fileBox.show();
     }
 
+    public static void newProjectDialogBox() throws IOException {
+        NewProjectBox projectBox = new NewProjectBox();
+        projectBox.show();
+    }
+
     public static void createFile(File directory, String fileName) throws IOException {
         try {
             File file = new File(directory, fileName);
@@ -281,8 +289,72 @@ public class FileHandler {
     }
 
     public static void newFile() throws IOException {
-
         NewFileBoxController newFileBoxController = new NewFileBoxController();
         String fileName = newFileBoxController.newFileName;
+    }
+
+    //Deletes the out, src and data folders if they exist and are empty
+    public static void deleteOutSrcData (File out, File src, File data) throws IOException {
+        Files.deleteIfExists(src.toPath());
+        Files.deleteIfExists(out.toPath());
+        Files.deleteIfExists(data.toPath());
+    }
+
+    //Initializes the data folder when creating a new project
+    public static void initData () {
+
+    }
+
+    //Creates the folder structure of the new project
+    public static void createNewProject(File directory, String projectName) throws IOException {
+        try {
+            //Create project directory
+            String directoryPath = directory.getAbsolutePath() + File.separator + projectName;
+            File newDirectory = new File(directoryPath);
+            boolean success;
+            if (!newDirectory.exists()) {
+                success = newDirectory.mkdir();
+            } else {
+                System.out.println("Directory already exists");
+                return;
+            }
+
+            if (success) {
+                //Creating out, src and data dir
+                File out = new File(directoryPath + File.separator + "out");
+                File src = new File(directoryPath + File.separator + "scr");
+                File data = new File(directoryPath + File.separator + ".data");
+
+                boolean outSuccess, scrSuccess, dataSuccess;
+
+                outSuccess = out.mkdir();
+                scrSuccess = src.mkdir();
+                dataSuccess = data.mkdir();
+
+                //There has been an issue create at least one of the directories
+                if (!outSuccess) {
+                    System.out.println("Unable to create directory 'out'");
+                    deleteOutSrcData(out, src, data);
+                    return;
+                } else if (!scrSuccess) {
+                    System.out.println("Unable to create directory 'scr'");
+                    deleteOutSrcData(out, src, data);
+                    return;
+                } else if (!dataSuccess) {
+                    System.out.println("Unable to create directory 'data'");
+                    deleteOutSrcData(out, src, data);
+                    return;
+                }
+
+                initData();
+
+                Status status = new Status(controller);
+                status.setStatusLabelText("New project created", 5000);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

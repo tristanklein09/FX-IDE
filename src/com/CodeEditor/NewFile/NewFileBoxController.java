@@ -1,4 +1,4 @@
-package com.CodeEditor;
+package com.CodeEditor.NewFile;
 
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;

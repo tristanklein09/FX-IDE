@@ -1,6 +1,7 @@
 package com.CodeEditor;
 
 import com.CodeEditor.FileHandler.FileHandler;
+import com.CodeEditor.NewFile.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -38,6 +39,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //Open project
         openMenuItem.setOnAction(_ -> {
             try {
                 openFolder();
@@ -46,6 +48,7 @@ public class Controller implements Initializable {
             }
         });
 
+        //Save
         saveMenuItem.setOnAction(_ -> {
            try {
                onSaveFileMenu(this);
@@ -55,6 +58,7 @@ public class Controller implements Initializable {
            }
         });
 
+        //Save All
         saveAllMenuItem.setOnAction(_ -> {
             try {
                 saveAllFiles(this);
@@ -63,12 +67,22 @@ public class Controller implements Initializable {
             }
         });
 
+        //New File
         newMenuItem.setOnAction(_ -> {
             try {
-                File directory = openFileExplorer("Select folder");
-                newFileDirectory = directory;
+                newFileDirectory = openFileExplorer("Select folder");
                 newFileDialogBox();
             } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        //New Project
+        newProjectMenuItem.setOnAction(_ -> {
+            try {
+                newProjectDirectory = openFileExplorer("Select directory");
+                newProjectDialogBox();
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
