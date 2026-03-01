@@ -1,6 +1,7 @@
 package com.CodeEditor;
 
 import com.CodeEditor.FileHandler.FileHandler;
+import com.CodeEditor.NewProject.NewProjectBoxController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -77,9 +78,14 @@ public class Controller implements Initializable {
 
         //New Project
         newProjectMenuItem.setOnAction(_ -> {
+            FileHandler fh = new FileHandler(fileTree, this); //?
+            NewProjectBoxController npbc = new NewProjectBoxController();
             try {
                 newProjectDirectory = openFileExplorer("Select directory");
                 newProjectDialogBox();
+                saveAllFiles(this);
+                fh.openFolder(new File(newProjectDirectory + File.separator + newProjectName));
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

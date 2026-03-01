@@ -25,8 +25,6 @@ public class NewProjectBoxController implements Initializable {
 
     private Stage stage;
 
-    public String newProjectName;
-
     public void setStage(Stage stage) {
         this.stage = stage;
     }

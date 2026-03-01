@@ -32,6 +32,7 @@ public class FileHandler {
     public static File openedDirectory = null;
     public static File newFileDirectory = null;
     public static File newProjectDirectory = null;
+    public static String newProjectName = null;
 
     public static ArrayList<Pair<Tab, File>> tabs = new ArrayList<>();
     public static ArrayList<File> unsavedFiles = new ArrayList<>();
