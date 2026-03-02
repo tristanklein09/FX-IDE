@@ -32,6 +32,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -39,7 +40,9 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -90,10 +93,18 @@
             <TabPane fx:id="tabPane" prefHeight="695.0" prefWidth="980.0" tabClosingPolicy="UNAVAILABLE" />
         </items>
       </SplitPane>
+      <TitledPane animated="false" expanded="false" stylesheets="@css/titledPaneUpwards.css" text="untitled">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        </content>
+      </TitledPane>
       <Pane fx:id="bottombarPane" prefHeight="80.0" prefWidth="1280.0">
          <children>
             <Label fx:id="statusLabel" layoutX="7.0" prefHeight="28.0" prefWidth="292.0" />
          </children>
+         <VBox.margin>
+            <Insets top="30.0" />
+         </VBox.margin>
       </Pane>
   </children>
 </VBox>

@@ -38,6 +38,13 @@ public class Controller implements Initializable {
     public MenuItem newProjectMenuItem;
     @FXML
     public MenuItem projectStructureMenuItem;
+    @FXML
+    public MenuItem runMenuItem;
+    @FXML
+    public Button outputButton;
+    @FXML
+    public Button problemsButton;
+
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -102,6 +109,19 @@ public class Controller implements Initializable {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        });
+
+        //Run
+        runMenuItem.setOnAction(_ -> {
+            //Compile and run
+        });
+
+        outputButton.setOnAction(_ -> {
+
+        });
+
+        problemsButton.setOnAction(_ -> {
+
         });
 
     }
