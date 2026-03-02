@@ -58,6 +58,7 @@
             <MenuItem disable="true" mnemonicParsing="false" text="Save As…" />
                   <MenuItem fx:id="saveAllMenuItem" mnemonicParsing="false" text="Save All" />
                   <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="projectStructureMenuItem" mnemonicParsing="false" text="Project Structure" />
             <MenuItem disable="true" mnemonicParsing="false" text="Preferences…" />
             <MenuItem disable="true" mnemonicParsing="false" text="Quit" />
           </items>

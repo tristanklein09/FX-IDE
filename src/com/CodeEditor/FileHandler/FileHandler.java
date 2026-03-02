@@ -4,8 +4,8 @@ import com.CodeEditor.*;
 import com.CodeEditor.NewFile.NewFileBox;
 import com.CodeEditor.NewFile.NewFileBoxController;
 import com.CodeEditor.NewProject.NewProjectBox;
-
 import com.CodeEditor.ProjectMetadata.ProjectMeta;
+
 import javafx.scene.control.*;
 import org.fxmisc.richtext.*;
 import javafx.stage.DirectoryChooser;
@@ -33,6 +33,7 @@ public class FileHandler {
     public static File newFileDirectory = null;
     public static File newProjectDirectory = null;
     public static String newProjectName = null;
+    public static Path currentProjectStructureJsonPath = null;
 
     public static ArrayList<Pair<Tab, File>> tabs = new ArrayList<>();
     public static ArrayList<File> unsavedFiles = new ArrayList<>();
@@ -333,8 +334,8 @@ public class FileHandler {
     //Initializes the data folder when creating a new project
     public static void initData (String projectName, File dataDir) throws IOException {
         ObjectMapper mapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
-        mapper.isEnabled(SerializationFeature.INDENT_OUTPUT);
         Path file = Path.of(dataDir.getAbsolutePath() + File.separator + "project.json"); //Path of the file
+        currentProjectStructureJsonPath = file;
 
         //Assigning the values
         ProjectMeta meta = new ProjectMeta();

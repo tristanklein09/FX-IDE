@@ -2,6 +2,7 @@ package com.CodeEditor;
 
 import com.CodeEditor.FileHandler.FileHandler;
 import com.CodeEditor.NewProject.NewProjectBoxController;
+import com.CodeEditor.ProjectStructure.ProjectStructureBox;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -35,6 +36,8 @@ public class Controller implements Initializable {
     public MenuItem newMenuItem;
     @FXML
     public MenuItem newProjectMenuItem;
+    @FXML
+    public MenuItem projectStructureMenuItem;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -86,6 +89,16 @@ public class Controller implements Initializable {
                 saveAllFiles(this);
                 fh.openFolder(new File(newProjectDirectory + File.separator + newProjectName));
 
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        //Project Structure
+        projectStructureMenuItem.setOnAction(_ -> {
+            ProjectStructureBox psb = new ProjectStructureBox();
+            try {
+                psb.show();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
