@@ -1,8 +1,10 @@
 package com.CodeEditor;
 
+import com.CodeEditor.Compiler.Compiler;
 import com.CodeEditor.FileHandler.FileHandler;
 import com.CodeEditor.NewProject.NewProjectBoxController;
 import com.CodeEditor.ProjectStructure.ProjectStructureBox;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -114,6 +116,22 @@ public class Controller implements Initializable {
         //Run
         runMenuItem.setOnAction(_ -> {
             //Compile and run
+                Task<Void> task = new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        Compiler compiler = new Compiler();
+                        compiler.compile();
+                        compiler.run();
+                        return null;
+                    }
+                };
+
+                task.setOnFailed(e -> {
+                    System.out.println("Task failed");
+                    task.getException().printStackTrace();
+                });
+                System.out.println("Task starting...");
+                new Thread(task).start();
         });
 
         outputButton.setOnAction(_ -> {

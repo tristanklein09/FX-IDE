@@ -1,5 +1,2 @@
-H:\
-H:\null
-H:\Test
-C:\Users\Tristan\Desktop\Test\Test
-C:\Users\Tristan\Downloads\Test
+C:\Users\Tristan\Desktop\Test1
+C:\Users\Tristan\Desktop\Test2

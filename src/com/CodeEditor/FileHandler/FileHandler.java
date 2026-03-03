@@ -367,7 +367,7 @@ public class FileHandler {
             if (success) {
                 //Creating out, src and data dir
                 File out = new File(directoryPath + File.separator + "out");
-                File src = new File(directoryPath + File.separator + "scr");
+                File src = new File(directoryPath + File.separator + "src");
                 File data = new File(directoryPath + File.separator + ".data");
 
                 boolean outSuccess, scrSuccess, dataSuccess;
