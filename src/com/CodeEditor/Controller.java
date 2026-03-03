@@ -8,6 +8,10 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.fxmisc.richtext.GenericStyledArea;
+import org.fxmisc.richtext.StyleClassedTextArea;
+import org.fxmisc.richtext.StyledTextArea;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,10 +50,33 @@ public class Controller implements Initializable {
     public Button outputButton;
     @FXML
     public Button problemsButton;
+    @FXML
+    public SplitPane toolWindowSplitPane;
+    @FXML
+    public SplitPane treeCodeSplitPane;
+    @FXML
+    public Tab outputTab;
+    @FXML
+    public Tab problemsTab;
+
+    private Object outputPS;
+
+    public static StyleClassedTextArea outputTextArea =  new StyleClassedTextArea();
+    public static StyleClassedTextArea problemsTextArea = new StyleClassedTextArea();
 
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //Add genericStyled area to the tool window tabs
+        outputTab.setClosable(false);
+        outputTab.setContent(outputTextArea);
+        outputTextArea.setEditable(false);
+        problemsTab.setClosable(false);
+        problemsTab.setContent(problemsTextArea);
+
+        outputTextArea.getStyleClass().add("com/CodeEditor/resources/css/ToolWindow/outputTextArea.css");
+        problemsTextArea.getStyleClass().add("com/CodeEditor/resources/css/ToolWindow/problemsTextArea.css");
+
         //Open project
         openMenuItem.setOnAction(_ -> {
             try {
@@ -130,7 +157,6 @@ public class Controller implements Initializable {
                     System.out.println("Task failed");
                     task.getException().printStackTrace();
                 });
-                System.out.println("Task starting...");
                 new Thread(task).start();
         });
 

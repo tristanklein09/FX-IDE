@@ -1,5 +1,7 @@
 package com.CodeEditor.Compiler;
 
+import javafx.application.Platform;
+
 import javax.tools.*;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.CodeEditor.Controller.outputTextArea;
+import static com.CodeEditor.Controller.problemsTextArea;
 import static com.CodeEditor.FileHandler.FileHandler.openedDirectory;
 
 public class Compiler {
@@ -18,7 +22,7 @@ public class Compiler {
     public Path srcPath = openedDirectory.toPath().resolve("src");
 
     public void compile() throws IOException {
-        //Path srcPath = openedDirectory.toPath().resolve("src");
+        System.out.println("Compiling...");
 
         if (!Files.exists(srcPath)) {
             throw new RuntimeException("src folder not found at: " + srcPath.toAbsolutePath());
@@ -52,9 +56,9 @@ public class Compiler {
         boolean success = task.call();
         fileManager.close();
 
-        System.out.println("Compilation success:" + success);
-        System.out.println(ToolProvider.getSystemJavaCompiler());
-        System.out.println("Found" + sourceFiles.size() + " source files");
+        System.out.println("Compilation success: " + success);
+        System.out.println("JDK Compiler: " + ToolProvider.getSystemJavaCompiler());
+        System.out.println("Found " + sourceFiles.size() + " source file(s)");
 
         for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             Diagnostic.Kind kind = diagnostic.getKind();
@@ -63,11 +67,13 @@ public class Compiler {
             Path file = Paths.get(diagnostic.getSource().toUri());
 
             //Send to problems panel
-            System.out.println("----");
-            System.out.println("Kind: " + diagnostic.getKind());
-            System.out.println("File: " + diagnostic.getSource());
-            System.out.println("Line: " + diagnostic.getLineNumber());
-            System.out.println("Message: " + diagnostic.getMessage(null));
+            Platform.runLater(() -> { //Run on javafx application thread
+                problemsTextArea.append(String.valueOf(kind), "error");
+                problemsTextArea.append(String.valueOf(line), "error");
+                problemsTextArea.append(message, "error");
+                problemsTextArea.append(String.valueOf(file), "error");
+            });
+
         }
 
     }
@@ -88,6 +94,11 @@ public class Compiler {
         //Send output to output panel and errors to problems panel
         System.out.println(errors);
         System.out.println(output);
-    }
 
+        Platform.runLater(() -> { //Run on javafx application thread
+            outputTextArea.append(errors, "errors");
+            outputTextArea.append(output, "info");
+        });
+
+    }
 }
