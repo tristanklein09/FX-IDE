@@ -3,8 +3,7 @@ package com.CodeEditor.Compiler;
 import javafx.application.Platform;
 
 import javax.tools.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,12 +15,13 @@ import static com.CodeEditor.Controller.outputTextArea;
 import static com.CodeEditor.Controller.problemsTextArea;
 import static com.CodeEditor.FileHandler.FileHandler.openedDirectory;
 
+//TODO: Check if there is bug that will make it so that the classes in out are still ran even if there is a compilation error
 public class Compiler {
 
     public Path outPath = openedDirectory.toPath().resolve("out");
     public Path srcPath = openedDirectory.toPath().resolve("src");
 
-    public void compile() throws IOException {
+    public boolean compile() throws IOException {
         System.out.println("Compiling...");
 
         if (!Files.exists(srcPath)) {
@@ -76,29 +76,48 @@ public class Compiler {
 
         }
 
+        return  success;
     }
 
     public void run() throws IOException {
-        //Path outPath = openedDirectory.toPath().resolve("out");
-
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", outPath.toString(), "Main");
         processBuilder.directory(new File(openedDirectory.toURI()));
         Process process = processBuilder.start();
 
         System.out.println("Running...");
 
-        //Read output and errors
-        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        String errors = new String(process.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+        //Stream output
+        stream(process, process.getErrorStream(), "error"); //errors
+        stream(process, process.getInputStream(), "info"); //output
 
-        //Send output to output panel and errors to problems panel
-        System.out.println(errors);
-        System.out.println(output);
+        //Wait for process to finish
+        new Thread(() -> {
+            try {
+                int exitCode = process.waitFor();
+                Platform.runLater(() ->
+                        outputTextArea.append("Process exited with code " + exitCode + "\n", "info")
+                );
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
 
-        Platform.runLater(() -> { //Run on javafx application thread
-            outputTextArea.append(errors, "errors");
-            outputTextArea.append(output, "info");
-        });
 
     }
+
+    //Stream the output line by line to the output and problems tabs
+    private void stream(Process process, InputStream stream, String style) {
+        new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String finalLine = line;
+                    Platform.runLater(() -> outputTextArea.append(finalLine + "\n", style));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
 }

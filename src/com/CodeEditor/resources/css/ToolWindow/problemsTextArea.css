@@ -1,3 +1,8 @@
-.info    { -fx-fill: #88ccff; }
-.warning { -fx-fill: #ffaa00; }
-.error   { -fx-fill: #ff5555; }
+.info {
+    -fx-fill: #a8e1ff;
+}
+
+.error {
+    -fx-fill: #ff6b6b;
+    -fx-font-weight: bold;
+}

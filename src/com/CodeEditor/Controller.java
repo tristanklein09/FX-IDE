@@ -147,8 +147,13 @@ public class Controller implements Initializable {
                     @Override
                     protected Void call() throws Exception {
                         Compiler compiler = new Compiler();
-                        compiler.compile();
-                        compiler.run();
+                        boolean success = compiler.compile();
+                        if (success) {
+                            compiler.run();
+                        } else {
+                            System.out.println("Compilation error");
+                        }
+
                         return null;
                     }
                 };
@@ -170,7 +175,7 @@ public class Controller implements Initializable {
 
     }
 
-    public void openFolder() throws IOException {
+    private void openFolder() throws IOException {
         FileHandler fileHandler = new FileHandler(fileTree, this);
         fileHandler.openProjectWithExplorer("Select Folder");
     }
