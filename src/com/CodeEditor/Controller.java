@@ -4,10 +4,12 @@ import com.CodeEditor.Compiler.Compiler;
 import com.CodeEditor.FileHandler.FileHandler;
 import com.CodeEditor.NewProject.NewProjectBoxController;
 import com.CodeEditor.ProjectStructure.ProjectStructureBox;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
@@ -23,6 +25,9 @@ import static com.CodeEditor.FileHandler.FileHandler.*;
 //This class is responsible for handling all the events
 //It simply detects the events and then calls some other function
 public class Controller implements Initializable {
+
+    private int inputStartPosition = 0;
+    private Compiler currentCompiler;
 
     @FXML
     public MenuItem openMenuItem;
@@ -70,7 +75,7 @@ public class Controller implements Initializable {
         //Add genericStyled area to the tool window tabs
         outputTab.setClosable(false);
         outputTab.setContent(outputTextArea);
-        outputTextArea.setEditable(false);
+        outputTextArea.setEditable(true);
         problemsTab.setClosable(false);
         problemsTab.setContent(problemsTextArea);
 
@@ -146,10 +151,10 @@ public class Controller implements Initializable {
                 Task<Void> task = new Task<>() {
                     @Override
                     protected Void call() throws Exception {
-                        Compiler compiler = new Compiler();
-                        boolean success = compiler.compile();
+                        currentCompiler = new Compiler(Controller.this);
+                        boolean success = currentCompiler.compile();
                         if (success) {
-                            compiler.run();
+                            currentCompiler.run();
                         } else {
                             System.out.println("Compilation error");
                         }
@@ -173,6 +178,46 @@ public class Controller implements Initializable {
 
         });
 
+        outputTextArea.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
+
+            // Prevent editing previous output
+            if (outputTextArea.getCaretPosition() < inputStartPosition) {
+                outputTextArea.moveTo(outputTextArea.getLength());
+            }
+
+            if (event.getCode() == KeyCode.BACK_SPACE &&
+                    outputTextArea.getCaretPosition() <= inputStartPosition) {
+                event.consume();
+            }
+
+            // Handle ENTER key (send input to running process)
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                event.consume(); // prevent default newline behavior
+
+                int caretPosition = outputTextArea.getCaretPosition();
+                String input = outputTextArea.getText(inputStartPosition, caretPosition);
+
+                try {
+                    if (currentCompiler != null) {
+                        currentCompiler.sendInput(input);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                outputTextArea.appendText("\n");
+                inputStartPosition = outputTextArea.getLength();
+            }
+        });
+
+
+    }
+
+    public void appendToConsole(String text, String style) {
+        Platform.runLater(() -> {
+            outputTextArea.append(text, style);
+            inputStartPosition = outputTextArea.getLength();
+        });
     }
 
     private void openFolder() throws IOException {

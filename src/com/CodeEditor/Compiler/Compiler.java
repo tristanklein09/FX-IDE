@@ -1,5 +1,6 @@
 package com.CodeEditor.Compiler;
 
+import com.CodeEditor.Controller;
 import javafx.application.Platform;
 
 import javax.tools.*;
@@ -11,15 +12,26 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.CodeEditor.Controller.outputTextArea;
-import static com.CodeEditor.Controller.problemsTextArea;
+//import static com.CodeEditor.Controller.outputTextArea;
+//import static com.CodeEditor.Controller.problemsTextArea;
 import static com.CodeEditor.FileHandler.FileHandler.openedDirectory;
 
 //TODO: Check if there is bug that will make it so that the classes in out are still ran even if there is a compilation error
 public class Compiler {
 
+    private Process currentProcess;
+    private BufferedWriter processInputWriter;
+    private Controller controller;
+
     public Path outPath = openedDirectory.toPath().resolve("out");
     public Path srcPath = openedDirectory.toPath().resolve("src");
+
+    //private Process currentProcess;
+    //private BufferedWriter processInputWriter;
+
+    public Compiler(Controller controller) {
+        this.controller = controller;
+    }
 
     public boolean compile() throws IOException {
         System.out.println("Compiling...");
@@ -68,10 +80,10 @@ public class Compiler {
 
             //Send to problems panel
             Platform.runLater(() -> { //Run on javafx application thread
-                problemsTextArea.append(String.valueOf(kind), "error");
-                problemsTextArea.append(String.valueOf(line), "error");
-                problemsTextArea.append(message, "error");
-                problemsTextArea.append(String.valueOf(file), "error");
+                Controller.problemsTextArea.append(String.valueOf(kind), "error");
+                Controller.problemsTextArea.append(String.valueOf(line), "error");
+                Controller.problemsTextArea.append(message, "error");
+                Controller.problemsTextArea.append(String.valueOf(file), "error");
             });
 
         }
@@ -82,21 +94,26 @@ public class Compiler {
     public void run() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", outPath.toString(), "Main");
         processBuilder.directory(new File(openedDirectory.toURI()));
-        Process process = processBuilder.start();
+
+        currentProcess = processBuilder.start();
+        processInputWriter = new BufferedWriter(
+                new OutputStreamWriter(currentProcess.getOutputStream()));
 
         System.out.println("Running...");
 
+        currentProcess = processBuilder.start();
+        processInputWriter = new BufferedWriter(
+                new OutputStreamWriter(currentProcess.getOutputStream()));
+
         //Stream output
-        stream(process, process.getErrorStream(), "error"); //errors
-        stream(process, process.getInputStream(), "info"); //output
+        stream(currentProcess.getErrorStream(), "error");
+        stream(currentProcess.getInputStream(), "info");
 
         //Wait for process to finish
         new Thread(() -> {
             try {
-                int exitCode = process.waitFor();
-                Platform.runLater(() ->
-                        outputTextArea.append("Process exited with code " + exitCode + "\n", "info")
-                );
+                int exitCode = currentProcess.waitFor();
+                controller.appendToConsole("Process exited with code " + exitCode + "\n", "info");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -106,18 +123,26 @@ public class Compiler {
     }
 
     //Stream the output line by line to the output and problems tabs
-    private void stream(Process process, InputStream stream, String style) {
+    private void stream(InputStream stream, String style) {
         new Thread(() -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String finalLine = line;
-                    Platform.runLater(() -> outputTextArea.append(finalLine + "\n", style));
+                    controller.appendToConsole(finalLine + "\n", style);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    public void sendInput(String input) throws IOException {
+        if (processInputWriter != null) {
+            processInputWriter.write(input);
+            processInputWriter.newLine();
+            processInputWriter.flush();
+        }
     }
 
 }
