@@ -28,6 +28,7 @@ public class Controller implements Initializable {
 
     private int inputStartPosition = 0;
     private Compiler currentCompiler;
+    public static boolean isRunning = false;
 
     @FXML
     public MenuItem openMenuItem;
@@ -190,24 +191,27 @@ public class Controller implements Initializable {
                 event.consume();
             }
 
-            // Handle ENTER key (send input to running process)
-            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
-                event.consume(); // prevent default newline behavior
+            if (isRunning) {
+                // Handle enter key (send input to running process)
+                if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    event.consume(); // Prevent default newline behavior
 
-                int caretPosition = outputTextArea.getCaretPosition();
-                String input = outputTextArea.getText(inputStartPosition, caretPosition);
+                    int caretPosition = outputTextArea.getCaretPosition();
+                    String input = outputTextArea.getText(inputStartPosition, caretPosition);
 
-                try {
-                    if (currentCompiler != null) {
-                        currentCompiler.sendInput(input);
+                    try {
+                        if (currentCompiler != null) {
+                            currentCompiler.sendInput(input);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
-                outputTextArea.appendText("\n");
-                inputStartPosition = outputTextArea.getLength();
+                    outputTextArea.appendText("\n");
+                    inputStartPosition = outputTextArea.getLength();
+                }
             }
+
         });
 
 

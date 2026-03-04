@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 //import static com.CodeEditor.Controller.outputTextArea;
 //import static com.CodeEditor.Controller.problemsTextArea;
 import static com.CodeEditor.FileHandler.FileHandler.openedDirectory;
+import static com.CodeEditor.Controller.isRunning;
 
 //TODO: Check if there is bug that will make it so that the classes in out are still ran even if there is a compilation error
 public class Compiler {
@@ -92,6 +93,9 @@ public class Compiler {
     }
 
     public void run() throws IOException {
+        isRunning = true;
+        System.out.println("isRunning: " + isRunning);
+
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", outPath.toString(), "Main");
         processBuilder.directory(new File(openedDirectory.toURI()));
 
@@ -114,10 +118,14 @@ public class Compiler {
             try {
                 int exitCode = currentProcess.waitFor();
                 controller.appendToConsole("Process exited with code " + exitCode + "\n", "info");
+
+                isRunning = false; //Processes finished here
+                System.out.println("isRunning: " + isRunning);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
+
 
 
     }
