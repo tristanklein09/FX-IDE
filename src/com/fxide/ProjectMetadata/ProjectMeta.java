@@ -1,4 +1,4 @@
-package com.CodeEditor.ProjectMetadata;
+package com.fxide.ProjectMetadata;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 

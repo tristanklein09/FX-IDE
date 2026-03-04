@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Code Editor.iml" filepath="$PROJECT_DIR$/Code Editor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fxide.iml" filepath="$PROJECT_DIR$/fxide.iml" />
     </modules>
   </component>
 </project>

@@ -1,6 +1,6 @@
-package com.CodeEditor.Compiler;
+package com.fxide.Compiler;
 
-import com.CodeEditor.Controller;
+import com.fxide.Controller;
 import javafx.application.Platform;
 
 import javax.tools.*;
@@ -12,10 +12,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//import static com.CodeEditor.Controller.consoleTextArea;
-//import static com.CodeEditor.Controller.problemsTextArea;
-import static com.CodeEditor.FileHandler.FileHandler.openedDirectory;
-import static com.CodeEditor.Controller.isRunning;
+//import static com.fxide.Controller.consoleTextArea;
+//import static com.fxide.Controller.problemsTextArea;
+import static com.fxide.FileHandler.FileHandler.openedDirectory;
+import static com.fxide.Controller.isRunning;
 
 //TODO: Check if there is bug that will make it so that the classes in out are still ran even if there is a compilation error
 public class Compiler {

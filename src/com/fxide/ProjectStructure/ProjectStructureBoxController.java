@@ -1,6 +1,6 @@
-package com.CodeEditor.ProjectStructure;
+package com.fxide.ProjectStructure;
 
-import com.CodeEditor.ProjectMetadata.ProjectMeta;
+import com.fxide.ProjectMetadata.ProjectMeta;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,7 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.CodeEditor.FileHandler.FileHandler.openedDirectory;
+import static com.fxide.FileHandler.FileHandler.openedDirectory;
 
 public class ProjectStructureBoxController implements Initializable {
 

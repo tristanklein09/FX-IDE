@@ -1,6 +1,6 @@
-package com.CodeEditor;
+package com.fxide;
 
-import com.CodeEditor.FileHandler.FileHandler;
+import com.fxide.FileHandler.FileHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

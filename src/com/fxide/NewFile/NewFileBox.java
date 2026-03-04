@@ -1,4 +1,4 @@
-package com.CodeEditor.NewFile;
+package com.fxide.NewFile;
 
 
 import javafx.fxml.FXMLLoader;
@@ -12,7 +12,7 @@ import java.io.IOException;
 public class NewFileBox {
 
     public void show() throws IOException {
-        FXMLLoader loader = new FXMLLoader(NewFileBox.class.getResource("/com/CodeEditor/resources/newFileBox.fxml"));
+        FXMLLoader loader = new FXMLLoader(NewFileBox.class.getResource("/com/fxide/resources/newFileBox.fxml"));
         Parent root = loader.load();
 
         Stage stage = new Stage();

@@ -1,9 +1,9 @@
-package com.CodeEditor;
+package com.fxide;
 
-import com.CodeEditor.Compiler.Compiler;
-import com.CodeEditor.FileHandler.FileHandler;
-import com.CodeEditor.NewProject.NewProjectBoxController;
-import com.CodeEditor.ProjectStructure.ProjectStructureBox;
+import com.fxide.Compiler.Compiler;
+import com.fxide.FileHandler.FileHandler;
+import com.fxide.NewProject.NewProjectBoxController;
+import com.fxide.ProjectStructure.ProjectStructureBox;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.CodeEditor.FileHandler.FileHandler.*;
+import static com.fxide.FileHandler.FileHandler.*;
 
 //This class is responsible for handling all the events
 //It simply detects the events and then calls some other function
@@ -88,8 +88,8 @@ public class Controller implements Initializable {
         problemsTextArea.setEditable(true);
         problemsTextArea.setWrapText(true);
 
-        consoleTextArea.getStyleClass().add("com/CodeEditor/resources/css/ToolWindow/outputTextArea.css");
-        problemsTextArea.getStyleClass().add("com/CodeEditor/resources/css/ToolWindow/problemsTextArea.css");
+        consoleTextArea.getStyleClass().add("com/fxide/resources/css/ToolWindow/outputTextArea.css");
+        problemsTextArea.getStyleClass().add("com/fxide/resources/css/ToolWindow/problemsTextArea.css");
 
         //Open project
         openMenuItem.setOnAction(_ -> {

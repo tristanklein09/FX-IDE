@@ -1,4 +1,4 @@
-package com.CodeEditor.NewFile;
+package com.fxide.NewFile;
 
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.CodeEditor.FileHandler.FileHandler.*;
+import static com.fxide.FileHandler.FileHandler.*;
 
 public class NewFileBoxController implements Initializable {
 

@@ -1,4 +1,4 @@
-package com.CodeEditor;
+package com.fxide;
 
 import javafx.application.Platform;
 

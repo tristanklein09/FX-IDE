@@ -1,10 +1,10 @@
-package com.CodeEditor.FileHandler;
+package com.fxide.FileHandler;
 
-import com.CodeEditor.*;
-import com.CodeEditor.NewFile.NewFileBox;
-import com.CodeEditor.NewFile.NewFileBoxController;
-import com.CodeEditor.NewProject.NewProjectBox;
-import com.CodeEditor.ProjectMetadata.ProjectMeta;
+import com.fxide.*;
+import com.fxide.NewFile.NewFileBox;
+import com.fxide.NewFile.NewFileBoxController;
+import com.fxide.NewProject.NewProjectBox;
+import com.fxide.ProjectMetadata.ProjectMeta;
 
 import javafx.scene.control.*;
 import org.fxmisc.richtext.*;
@@ -28,7 +28,7 @@ public class FileHandler {
 
     private static TreeView<File> fileTree = null;
     private static Controller controller = null;
-    private final File openRecentFile = new File("src/com/CodeEditor/IDEmetadata/openRecent.txt");
+    private final File openRecentFile = new File("src/com/fxide/IDEmetadata/openRecent.txt");
 
     public static File openedDirectory = null;
     public static File newFileDirectory = null;
