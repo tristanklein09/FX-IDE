@@ -1,0 +1,27 @@
+/* Tab and tabPane */
+
+/* Hide only the button graphic by default */
+.tab .tab-close-button .graphic {
+    -fx-opacity: 0;
+}
+
+/* Show the x when hovering over the tab */
+.tab:hover .tab-close-button .graphic {
+    -fx-opacity: 1;
+}
+
+/* Make the button text slightly smaller than the text*/
+.tab .tab-close-button .graphic {
+    -fx-scale-x: 0.5;
+    -fx-scale-y: 0.5;
+}
+
+/* Remove background flash */
+.tab .tab-close-button {
+    -fx-background-color: transparent;
+}
+
+/* Hover effect on the tab */
+.tab:hover .tab-close-button {
+    -fx-background-color: rgba(1, 1, 1, 1);
+}

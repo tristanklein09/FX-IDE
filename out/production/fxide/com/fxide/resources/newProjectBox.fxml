@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="125.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fxide.NewProject.NewProjectBoxController">
+   <children>
+      <TextField fx:id="newProjectTextField" prefHeight="35.0" prefWidth="330.0" promptText="Project name">
+         <VBox.margin>
+            <Insets left="10.0" right="10.0" top="20.0" />
+         </VBox.margin>
+      </TextField>
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+         <children>
+            <Button fx:id="newProjectCancelButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="66.0" text="Cancel">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="newProjectCreateButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="66.0" text="Create">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+         <VBox.margin>
+            <Insets left="200.0" top="40.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+</VBox>

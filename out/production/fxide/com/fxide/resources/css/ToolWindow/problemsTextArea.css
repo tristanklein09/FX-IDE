@@ -1,0 +1,8 @@
+.info {
+    -fx-fill: #a8e1ff;
+}
+
+.error {
+    -fx-fill: #ff6b6b;
+    -fx-font-weight: bold;
+}

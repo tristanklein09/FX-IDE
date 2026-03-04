@@ -5,11 +5,14 @@ import javafx.application.Platform;
 
 import javax.tools.*;
 import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 //import static com.fxide.Controller.consoleTextArea;
@@ -26,9 +29,6 @@ public class Compiler {
 
     public Path outPath = openedDirectory.toPath().resolve("out");
     public Path srcPath = openedDirectory.toPath().resolve("src");
-
-    //private Process currentProcess;
-    //private BufferedWriter processInputWriter;
 
     public Compiler(Controller controller) {
         this.controller = controller;
@@ -92,11 +92,13 @@ public class Compiler {
         return  success;
     }
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         isRunning = true;
-        System.out.println("isRunning: " + isRunning);
 
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", outPath.toString(), "Main");
+        String mainClass = findMainClass();
+
+
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", outPath.toString(), mainClass);
         processBuilder.directory(new File(openedDirectory.toURI()));
 
         currentProcess = processBuilder.start();
@@ -104,10 +106,6 @@ public class Compiler {
                 new OutputStreamWriter(currentProcess.getOutputStream()));
 
         System.out.println("Running...");
-
-        currentProcess = processBuilder.start();
-        processInputWriter = new BufferedWriter(
-                new OutputStreamWriter(currentProcess.getOutputStream()));
 
         //Stream output
         stream(currentProcess.getErrorStream(), "error");
@@ -118,9 +116,9 @@ public class Compiler {
             try {
                 int exitCode = currentProcess.waitFor();
                 controller.appendToConsole("Process exited with code " + exitCode + "\n", "info");
+                System.out.println("Process exited with code " + exitCode);
 
                 isRunning = false; //Processes finished here
-                System.out.println("isRunning: " + isRunning);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -151,6 +149,36 @@ public class Compiler {
             processInputWriter.newLine();
             processInputWriter.flush();
         }
+    }
+
+    private String findMainClass() throws Exception {
+        AtomicReference<String> mainClass = new AtomicReference<>();
+
+        URLClassLoader classLoader = new URLClassLoader(
+                new URL[]{ outPath.toUri().toURL() }
+        );
+
+        Files.walk(outPath)
+                .filter(p -> p.toString().endsWith(".class"))
+                .forEach(path -> {
+                    try {
+                        String className = outPath.relativize(path)
+                                .toString()
+                                .replace(File.separator, ".")
+                                .replace(".class", "");
+
+                        Class<?> userClass = classLoader.loadClass(className);
+
+                        try {
+                            userClass.getMethod("main", String[].class);
+                            mainClass.set(className); // found it
+                        } catch (NoSuchMethodException ignored) {}
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        return mainClass.get();
     }
 
 }
