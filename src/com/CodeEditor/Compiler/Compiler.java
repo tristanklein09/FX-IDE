@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//import static com.CodeEditor.Controller.outputTextArea;
+//import static com.CodeEditor.Controller.consoleTextArea;
 //import static com.CodeEditor.Controller.problemsTextArea;
 import static com.CodeEditor.FileHandler.FileHandler.openedDirectory;
 import static com.CodeEditor.Controller.isRunning;

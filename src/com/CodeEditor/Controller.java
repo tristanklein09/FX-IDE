@@ -10,10 +10,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import org.fxmisc.richtext.GenericStyledArea;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import org.fxmisc.richtext.StyleClassedTextArea;
-import org.fxmisc.richtext.StyledTextArea;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +52,7 @@ public class Controller implements Initializable {
     @FXML
     public MenuItem runMenuItem;
     @FXML
-    public Button outputButton;
+    public Button consoleButton;
     @FXML
     public Button problemsButton;
     @FXML
@@ -61,26 +60,35 @@ public class Controller implements Initializable {
     @FXML
     public SplitPane treeCodeSplitPane;
     @FXML
-    public Tab outputTab;
+    public Tab consoleTab;
     @FXML
     public Tab problemsTab;
 
     private Object outputPS;
 
-    public static StyleClassedTextArea outputTextArea =  new StyleClassedTextArea();
+    public static StyleClassedTextArea consoleTextArea =  new StyleClassedTextArea();
     public static StyleClassedTextArea problemsTextArea = new StyleClassedTextArea();
 
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //Add genericStyled area to the tool window tabs
-        outputTab.setClosable(false);
-        outputTab.setContent(outputTextArea);
-        outputTextArea.setEditable(true);
-        problemsTab.setClosable(false);
-        problemsTab.setContent(problemsTextArea);
+        VBox outputWrapper = new VBox(consoleTextArea);
+        VBox problemsWrapper = new VBox(problemsTextArea);
+        VBox.setVgrow(consoleTextArea, Priority.ALWAYS);
+        VBox.setVgrow(problemsTextArea, Priority.ALWAYS);
 
-        outputTextArea.getStyleClass().add("com/CodeEditor/resources/css/ToolWindow/outputTextArea.css");
+        consoleTab.setClosable(false);
+        consoleTab.setContent(outputWrapper);
+        problemsTab.setClosable(false);
+        problemsTab.setContent(problemsWrapper);
+
+        consoleTextArea.setEditable(true);
+        consoleTextArea.setWrapText(true);
+        problemsTextArea.setEditable(true);
+        problemsTextArea.setWrapText(true);
+
+        consoleTextArea.getStyleClass().add("com/CodeEditor/resources/css/ToolWindow/outputTextArea.css");
         problemsTextArea.getStyleClass().add("com/CodeEditor/resources/css/ToolWindow/problemsTextArea.css");
 
         //Open project
@@ -129,6 +137,7 @@ public class Controller implements Initializable {
                 newProjectDirectory = openFileExplorer("Select directory");
                 newProjectDialogBox();
                 saveAllFiles(this);
+                closeAllTabs();
                 fh.openFolder(new File(newProjectDirectory + File.separator + newProjectName));
 
             } catch (IOException e) {
@@ -171,7 +180,7 @@ public class Controller implements Initializable {
                 new Thread(task).start();
         });
 
-        outputButton.setOnAction(_ -> {
+        consoleButton.setOnAction(_ -> {
 
         });
 
@@ -179,15 +188,15 @@ public class Controller implements Initializable {
 
         });
 
-        outputTextArea.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
+        consoleTextArea.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
 
             // Prevent editing previous output
-            if (outputTextArea.getCaretPosition() < inputStartPosition) {
-                outputTextArea.moveTo(outputTextArea.getLength());
+            if (consoleTextArea.getCaretPosition() < inputStartPosition) {
+                consoleTextArea.moveTo(consoleTextArea.getLength());
             }
 
             if (event.getCode() == KeyCode.BACK_SPACE &&
-                    outputTextArea.getCaretPosition() <= inputStartPosition) {
+                    consoleTextArea.getCaretPosition() <= inputStartPosition) {
                 event.consume();
             }
 
@@ -196,8 +205,8 @@ public class Controller implements Initializable {
                 if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
                     event.consume(); // Prevent default newline behavior
 
-                    int caretPosition = outputTextArea.getCaretPosition();
-                    String input = outputTextArea.getText(inputStartPosition, caretPosition);
+                    int caretPosition = consoleTextArea.getCaretPosition();
+                    String input = consoleTextArea.getText(inputStartPosition, caretPosition);
 
                     try {
                         if (currentCompiler != null) {
@@ -207,8 +216,8 @@ public class Controller implements Initializable {
                         e.printStackTrace();
                     }
 
-                    outputTextArea.appendText("\n");
-                    inputStartPosition = outputTextArea.getLength();
+                    consoleTextArea.appendText("\n");
+                    inputStartPosition = consoleTextArea.getLength();
                 }
             }
 
@@ -219,8 +228,8 @@ public class Controller implements Initializable {
 
     public void appendToConsole(String text, String style) {
         Platform.runLater(() -> {
-            outputTextArea.append(text, style);
-            inputStartPosition = outputTextArea.getLength();
+            consoleTextArea.append(text, style);
+            inputStartPosition = consoleTextArea.getLength();
         });
     }
 
@@ -228,4 +237,8 @@ public class Controller implements Initializable {
         FileHandler fileHandler = new FileHandler(fileTree, this);
         fileHandler.openProjectWithExplorer("Select Folder");
     }
+
+    public void closeAllTabs() {
+        tabPane.getTabs().clear();
+    };
 }

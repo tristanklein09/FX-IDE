@@ -43,7 +43,6 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TreeView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -59,15 +58,15 @@
             <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" text="Save" />
-            <MenuItem disable="true" mnemonicParsing="false" text="Save As…" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Save As…" visible="false" />
                   <MenuItem fx:id="saveAllMenuItem" mnemonicParsing="false" text="Save All" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="projectStructureMenuItem" mnemonicParsing="false" text="Project Structure" />
-            <MenuItem disable="true" mnemonicParsing="false" text="Preferences…" />
-            <MenuItem disable="true" mnemonicParsing="false" text="Quit" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Preferences…" visible="false" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Quit" visible="false" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Edit">
+        <Menu disable="true" mnemonicParsing="false" text="Edit" visible="false">
           <items>
             <MenuItem disable="true" mnemonicParsing="false" text="Undo" />
             <MenuItem disable="true" mnemonicParsing="false" text="Redo" />
@@ -86,7 +85,7 @@
                 <MenuItem fx:id="runMenuItem" mnemonicParsing="false" text="Run" />
               </items>
             </Menu>
-        <Menu mnemonicParsing="false" text="Help">
+        <Menu disable="true" mnemonicParsing="false" text="Help" visible="false">
           <items>
             <MenuItem disable="true" mnemonicParsing="false" text="About MyHelloApp" />
           </items>
@@ -101,23 +100,23 @@
                   <TabPane fx:id="tabPane" prefHeight="695.0" prefWidth="980.0" tabClosingPolicy="UNAVAILABLE" />
               </items>
             </SplitPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="1278.0">
+            <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <TabPane prefHeight="200.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane prefHeight="200.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
-                      <Tab fx:id="outputTab" closable="false" text="Output" />
+                      <Tab fx:id="consoleTab" closable="false" text="Console" />
                       <Tab fx:id="problemsTab" closable="false" text="Problems" />
                     </tabs>
                   </TabPane>
                </children>
-            </AnchorPane>
+            </VBox>
         </items>
       </SplitPane>
       <Pane fx:id="bottombarPane" prefHeight="78.0" prefWidth="1280.0">
          <children>
             <Label fx:id="statusLabel" layoutX="7.0" prefHeight="28.0" prefWidth="292.0" />
-            <Button fx:id="problemsButton" layoutX="1200.0" layoutY="2.0" mnemonicParsing="false" text="Problems" />
-            <Button fx:id="outputButton" layoutX="1137.0" layoutY="2.0" mnemonicParsing="false" text="Output" />
+            <Button fx:id="problemsButton" layoutX="1200.0" layoutY="2.0" mnemonicParsing="false" text="Problems" visible="false" />
+            <Button fx:id="consoleButton" layoutX="1137.0" layoutY="2.0" mnemonicParsing="false" text="Console" visible="false" />
          </children>
          <VBox.margin>
             <Insets />

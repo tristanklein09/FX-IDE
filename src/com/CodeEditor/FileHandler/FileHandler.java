@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
@@ -74,7 +75,7 @@ public class FileHandler {
         this.controller = controller;
     }
 
-    public static void reloadTree() {
+    public static void reloadTree() throws IOException {
         loadRootFolder(openedDirectory);
     }
 
@@ -145,14 +146,67 @@ public class FileHandler {
         BufferedReader bfro = new BufferedReader(new FileReader(file));
         String st;
 
+        /*
         //Creating the tab
+        Label title = new Label(file.getName());
+        Button closeButton = new Button("x");
+        HBox header = new HBox(title, closeButton);
+
+        Tab tab = new Tab();
+        tab.setGraphic(header);
+
         CodeArea codeArea = new CodeArea();
         codeArea.setWrapText(true);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-        Tab tab = new Tab();
-        tab.setText(file.getName());
+
         tab.setContent(codeArea);
         controller.tabPane.getTabs().add(tab);
+
+        closeButton.setOnAction(e -> {
+            try {
+                saveFile(file, codeArea);
+                controller.tabPane.getTabs().remove(tab);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+         */
+
+        // Create tab with file name
+        Tab tab = new Tab(file.getName());
+        tab.setClosable(true);
+
+        // Create editor area
+        CodeArea codeArea = new CodeArea();
+        codeArea.setWrapText(true);
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+
+        tab.setContent(codeArea);
+
+        AtomicBoolean saveFailed = new AtomicBoolean(false);
+
+        // Handle close (save before closing)
+        tab.setOnCloseRequest(event -> {
+            try {
+                saveFile(file, codeArea);
+            } catch (IOException e) {
+                event.consume(); // prevent closing if save fails
+                e.printStackTrace();
+                saveFailed.set(true);
+            }
+
+            if (!saveFailed.get()) { //Saved successfully so we can close
+                controller.tabPane.getTabs().remove(tab);
+            }
+        });
+
+        controller.tabPane.getTabs().add(tab);
+        controller.tabPane.getSelectionModel().select(tab);
+
+        // Optional: show close button on all tabs
+        controller.tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+
 
         Pair<Tab, File> pair = new Pair<>(tab, file);
         tabs.add(pair);
@@ -195,7 +249,10 @@ public class FileHandler {
     }
 
     //Calls the recursive ui
-    public static void loadRootFolder(File directory) {
+    public static void loadRootFolder(File directory) throws IOException {
+        saveAllFiles(controller);
+        controller.closeAllTabs();
+
         TreeItem<File> rootNode = buildTreeForDirectory(directory);
         fileTree.setRoot(rootNode);
         rootNode.setExpanded(true);

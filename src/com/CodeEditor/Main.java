@@ -17,6 +17,7 @@ public class Main extends Application {
         FileHandler fh = new FileHandler(controller.fileTree, controller);
 
         Scene scene = new Scene(root ,1280, 720);
+        scene.getStylesheets().add(getClass().getResource("resources/css/ideTheme.css").toExternalForm());
 
         stage.setTitle("Sample Application");
         stage.setScene(scene);

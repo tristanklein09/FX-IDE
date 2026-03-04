@@ -45,7 +45,11 @@ public class NewFileBoxController implements Initializable {
                 throw new RuntimeException(e);
             }
 
-            reloadTree();
+            try {
+                reloadTree();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 }
