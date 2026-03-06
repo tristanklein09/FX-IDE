@@ -30,9 +30,15 @@ public class ProjectStructureBoxController implements Initializable {
     public TextField JDKPathText;
     @FXML
     public TextField JDKVersionText;
+    @FXML
+    public TextField srcPathText;
+    @FXML
+    public TextField outPathText;
 
     public static String JDKPath;
     public static String JDKVersion;
+    public static String srcPath;
+    public static String outPath;
 
     private Stage stage;
 
@@ -46,6 +52,9 @@ public class ProjectStructureBoxController implements Initializable {
 
         JDKPathText.setText(JDKPath);
         JDKVersionText.setText(JDKVersion);
+        srcPathText.setText(srcPath);
+        outPathText.setText(outPath);
+
 
         cancelButton.setOnAction(_ -> stage.close());
 
@@ -77,6 +86,8 @@ public class ProjectStructureBoxController implements Initializable {
         ProjectMeta.ProjectSettings settings = new ProjectMeta.ProjectSettings();
         settings.JDKPath = JDKPathText.getText();
         settings.JDKVersion = JDKVersionText.getText();
+        settings.srcPath = srcPathText.getText();
+        settings.outPath = outPathText.getText();
         meta.settings = settings;
 
         mapper.writeValue(file.toFile(), meta);
@@ -90,6 +101,8 @@ public class ProjectStructureBoxController implements Initializable {
             ProjectMeta meta = mapper.readValue(file.toFile(), ProjectMeta.class);
             JDKPath = meta.settings.JDKPath;
             JDKVersion = meta.settings.JDKVersion;
+            srcPath = meta.settings.srcPath;
+            outPath = meta.settings.outPath;
         } catch (Exception e) {
             throw new RuntimeException("Error reading project structure json file: " + e);
         }

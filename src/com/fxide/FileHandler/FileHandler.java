@@ -146,33 +146,6 @@ public class FileHandler {
         BufferedReader bfro = new BufferedReader(new FileReader(file));
         String st;
 
-        /*
-        //Creating the tab
-        Label title = new Label(file.getName());
-        Button closeButton = new Button("x");
-        HBox header = new HBox(title, closeButton);
-
-        Tab tab = new Tab();
-        tab.setGraphic(header);
-
-        CodeArea codeArea = new CodeArea();
-        codeArea.setWrapText(true);
-        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-
-        tab.setContent(codeArea);
-        controller.tabPane.getTabs().add(tab);
-
-        closeButton.setOnAction(e -> {
-            try {
-                saveFile(file, codeArea);
-                controller.tabPane.getTabs().remove(tab);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-
-         */
-
         // Create tab with file name
         Tab tab = new Tab(file.getName());
         tab.setClosable(true);
@@ -198,6 +171,13 @@ public class FileHandler {
 
             if (!saveFailed.get()) { //Saved successfully so we can close
                 controller.tabPane.getTabs().remove(tab);
+            }
+        });
+
+        //If a key is pressed and the file is not already in the unsaved files list then add it to the unsaved files list
+        codeArea.setOnKeyPressed(_ -> {
+            if (!unsavedFiles.contains(file)) {
+                unsavedFiles.add(file);
             }
         });
 

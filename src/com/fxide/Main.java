@@ -19,14 +19,14 @@ public class Main extends Application {
         Scene scene = new Scene(root ,1280, 720);
         scene.getStylesheets().add(getClass().getResource("resources/css/ideTheme.css").toExternalForm());
 
-        stage.setTitle("Sample Application");
+        stage.setTitle("FX-IDE");
         stage.setScene(scene);
         stage.show();
 
         fh.addAllToOpenRecentMenu();
     }
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 }

@@ -63,8 +63,8 @@ public class Controller implements Initializable {
     public Tab consoleTab;
     @FXML
     public Tab problemsTab;
-
-    private Object outputPS;
+    @FXML
+    public TabPane toolWindowTabPane;
 
     public static StyleClassedTextArea consoleTextArea =  new StyleClassedTextArea();
     public static StyleClassedTextArea problemsTextArea = new StyleClassedTextArea();
@@ -88,8 +88,8 @@ public class Controller implements Initializable {
         problemsTextArea.setEditable(true);
         problemsTextArea.setWrapText(true);
 
-        consoleTextArea.getStyleClass().add("com/fxide/resources/css/ToolWindow/outputTextArea.css");
-        problemsTextArea.getStyleClass().add("com/fxide/resources/css/ToolWindow/problemsTextArea.css");
+        consoleTextArea.getStyleClass().add("com/fxide/resources/css/ideTheme.css");
+        problemsTextArea.getStyleClass().add("com/fxide/resources/css/ideTheme.css");
 
         //Open project
         openMenuItem.setOnAction(_ -> {

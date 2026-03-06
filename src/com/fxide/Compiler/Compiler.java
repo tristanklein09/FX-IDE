@@ -1,6 +1,7 @@
 package com.fxide.Compiler;
 
 import com.fxide.Controller;
+import com.fxide.Status;
 import javafx.application.Platform;
 
 import javax.tools.*;
@@ -15,12 +16,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-//import static com.fxide.Controller.consoleTextArea;
-//import static com.fxide.Controller.problemsTextArea;
 import static com.fxide.FileHandler.FileHandler.openedDirectory;
 import static com.fxide.Controller.isRunning;
 
-//TODO: Check if there is bug that will make it so that the classes in out are still ran even if there is a compilation error
 public class Compiler {
 
     private Process currentProcess;
@@ -35,10 +33,14 @@ public class Compiler {
     }
 
     public boolean compile() throws IOException {
+        Status status = new Status(controller);
         System.out.println("Compiling...");
+
+        controller.toolWindowTabPane.getSelectionModel().select(controller.consoleTab);
 
         if (!Files.exists(srcPath)) {
             throw new RuntimeException("src folder not found at: " + srcPath.toAbsolutePath());
+
         }
 
         //Getting the compiler
@@ -81,10 +83,12 @@ public class Compiler {
 
             //Send to problems panel
             Platform.runLater(() -> { //Run on javafx application thread
-                Controller.problemsTextArea.append(String.valueOf(kind), "error");
-                Controller.problemsTextArea.append(String.valueOf(line), "error");
-                Controller.problemsTextArea.append(message, "error");
-                Controller.problemsTextArea.append(String.valueOf(file), "error");
+                controller.toolWindowTabPane.getSelectionModel().select(controller.problemsTab);
+
+                Controller.problemsTextArea.append(String.valueOf(kind) + ": ", "error");
+                Controller.problemsTextArea.append("Line: " + String.valueOf(line) + ", ", "error");
+                Controller.problemsTextArea.append(message + " ", "error");
+                Controller.problemsTextArea.append(String.valueOf(file.getFileName()) + "\n", "error");
             });
 
         }

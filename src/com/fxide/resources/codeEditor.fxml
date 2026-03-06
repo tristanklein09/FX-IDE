@@ -102,7 +102,7 @@
             </SplitPane>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <TabPane prefHeight="200.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                  <TabPane fx:id="toolWindowTabPane" prefHeight="200.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
                       <Tab fx:id="consoleTab" closable="false" text="Console" />
                       <Tab fx:id="problemsTab" closable="false" text="Problems" />

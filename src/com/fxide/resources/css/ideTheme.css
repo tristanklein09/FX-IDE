@@ -25,3 +25,14 @@
 .tab:hover .tab-close-button {
     -fx-background-color: rgba(1, 1, 1, 1);
 }
+
+
+/* Text areas text style */
+.info {
+    -fx-fill: #000000; /* Set color to black?*/
+}
+
+.error {
+    -fx-fill: #e81e1e;
+    -fx-font-weight: bold;
+}
