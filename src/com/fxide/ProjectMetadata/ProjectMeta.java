@@ -15,5 +15,6 @@ public class ProjectMeta {
         public String JDKVersion;
         public String srcPath;
         public String outPath;
+        public String libPath;
     }
 }

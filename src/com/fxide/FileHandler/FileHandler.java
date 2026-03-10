@@ -362,10 +362,11 @@ public class FileHandler {
     }
 
     //Deletes the out, src and data folders if they exist and are empty
-    public static void deleteOutSrcData (File out, File src, File data) throws IOException {
+    public static void deleteProject (File out, File src, File data, File lib) throws IOException {
         Files.deleteIfExists(src.toPath());
         Files.deleteIfExists(out.toPath());
         Files.deleteIfExists(data.toPath());
+        Files.deleteIfExists(lib.toPath());
     }
 
     //Initializes the data folder when creating a new project
@@ -406,26 +407,31 @@ public class FileHandler {
                 File out = new File(directoryPath + File.separator + "out");
                 File src = new File(directoryPath + File.separator + "src");
                 File data = new File(directoryPath + File.separator + ".data");
+                File lib = new File(directoryPath + File.separator + "lib");
 
-                boolean outSuccess, scrSuccess, dataSuccess;
+                boolean outSuccess, scrSuccess, dataSuccess, libSuccess;
 
                 outSuccess = out.mkdir();
                 scrSuccess = src.mkdir();
                 dataSuccess = data.mkdir();
+                libSuccess = lib.mkdir();
 
                 //There has been an issue create at least one of the directories
                 if (!outSuccess) {
                     System.out.println("Unable to create directory 'out'");
-                    deleteOutSrcData(out, src, data);
+                    deleteProject(out, src, data, lib);
                     return;
                 } else if (!scrSuccess) {
                     System.out.println("Unable to create directory 'scr'");
-                    deleteOutSrcData(out, src, data);
+                    deleteProject(out, src, data, lib);
                     return;
                 } else if (!dataSuccess) {
                     System.out.println("Unable to create directory 'data'");
-                    deleteOutSrcData(out, src, data);
+                    deleteProject(out, src, data, lib);
                     return;
+                } else if (!libSuccess) {
+                    System.out.println("Unable to create directory 'lib'");
+                    deleteProject(out, src, data, lib);
                 }
 
                 initData(projectName, data);

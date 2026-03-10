@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class Compiler {
 
     public Path outPath = openedDirectory.toPath().resolve("out");
     public Path srcPath = openedDirectory.toPath().resolve("src");
+    public Path libPath = openedDirectory.toPath().resolve("lib");
 
     public Compiler(Controller controller) {
         this.controller = controller;
@@ -64,7 +66,22 @@ public class Compiler {
         //Convert to JavaFileObjects
         Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(sourceFiles);
 
-        List<String> options = List.of("-d", outPath.toAbsolutePath().toString());
+        List<String> options = new java.util.ArrayList<>();
+        options.add("-d");
+        options.add(outPath.toAbsolutePath().toString());
+
+        if (Files.exists(libPath)) {
+            String libs = Files.list(libPath)
+                    .filter(p -> p.toString().endsWith(".jar"))
+                    .map(Path::toAbsolutePath)
+                    .map(Path::toString)
+                    .collect(Collectors.joining(File.pathSeparator));
+
+            if (!libs.isEmpty()) {
+                options.add("-classpath");
+                options.add(libs);
+            }
+        }
 
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, compilationUnits);
 
@@ -101,8 +118,22 @@ public class Compiler {
 
         String mainClass = findMainClass();
 
+        // Build runtime classpath
+        String classpath = outPath.toString();
 
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", outPath.toString(), mainClass);
+        if (Files.exists(libPath)) {
+            String libs = Files.list(libPath)
+                    .filter(p -> p.toString().endsWith(".jar"))
+                    .map(Path::toString)
+                    .collect(Collectors.joining(File.pathSeparator));
+
+            if (!libs.isEmpty()) {
+                classpath += File.pathSeparator + libs;
+            }
+        }
+
+        ProcessBuilder processBuilder =
+                new ProcessBuilder("java", "-cp", classpath, mainClass);
         processBuilder.directory(new File(openedDirectory.toURI()));
 
         currentProcess = processBuilder.start();
