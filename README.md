@@ -26,11 +26,9 @@ FX-IDE is a basic IDE created in java using javaFX. It is still a work in progre
 
 There are some important things to note about the structure of this project in order to get it working. 
 
-FX-IDE relies on the BellSoft Liberica JDK (v25.0.2), as it includes javafx and offers good support for computers that do not necessarily use an x86 CPU architecture. I highly recommend that you use this when running the program, although I have not tested alternate methods of using javafx. 
+To run FX-IDE, I use the Liberica JDK (v25.0.2), as it includes javafx and offers good support for computers that do not necessarily use an x86 CPU architecture. If you do not want to use this, it should be possible to add javafx to the pom.xml as dependency however, I have not tried this.
 
-It also also heavily relies on richtextfx (fat v0.11.7), to display the text. Therefore, to run this project, you should also install that dependency.
-
-FX-IDE also uses jackson3 for .json handling. It is important to use the correct version of jackson: jackson-core v3.0.4, jackson-databind v3.0.4 and jackson-annotations v3.0-rc4. These can be installed from the Maven Repository (tools.jackson)
+FX-IDE uses other external libraries, such as: Jackson and RichTextFX. These are automatically handeled by maven.
 
 #####  
 
